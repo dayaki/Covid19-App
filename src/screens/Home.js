@@ -4,6 +4,7 @@ import Icon from 'react-native-easy-icon';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {Hamburger} from '../../assets/icons';
 import {TitleText, MediumText} from '../constants/Text';
+import Country from '../components/Country';
 
 const Home = ({navigation}) => {
   const [cases, setCases] = useState(null);
@@ -139,6 +140,7 @@ const Home = ({navigation}) => {
           },
         }}>
         <SheetTitle>Corona Affected Countries</SheetTitle>
+        <Country />
       </RBSheet>
     </Container>
   );
