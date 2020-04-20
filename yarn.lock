@@ -5467,10 +5467,9 @@ react-native-screens@^2.5.0:
   dependencies:
     debounce "^1.2.0"
 
-react-native-svg-flagkit@^0.9.5:
+"react-native-svg-flagkit@https://github.com/InfinitoSolutions/react-native-svg-flagkit.git":
   version "0.9.5"
-  resolved "https://registry.yarnpkg.com/react-native-svg-flagkit/-/react-native-svg-flagkit-0.9.5.tgz#4d6e75af75aa7c3ff3b88e8cd61571bc93976714"
-  integrity sha512-tal7QlW4pUq17AcUFaBbS72lixoM96NAmGt9NkTBd5YsdNVGYrBPhFw1W9MiWGUsjSa+r4KrjKeEaseSEd/ZAA==
+  resolved "https://github.com/InfinitoSolutions/react-native-svg-flagkit.git#64eb987744b64703a4f1d9f5f621b74336989960"
   dependencies:
     react-native-svg "^9.3.3"
 

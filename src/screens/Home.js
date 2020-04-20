@@ -8,14 +8,31 @@ import Country from '../components/Country';
 
 const Home = ({navigation}) => {
   const [cases, setCases] = useState(null);
+  const [countries, setCountries] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState('');
   const [openSheet, setOpenSheet] = useState(false);
   const bottomSheet = useRef(null);
 
   useEffect(() => {
     fetch('https://api.covid19api.com/summary')
       .then(temp => temp.json())
-      .then(data => setCases(data.Global));
+      .then(data => {
+        setData(data);
+      });
   }, []);
+
+  const setData = data => {
+    setCases(data.Global);
+    const dem = data.Countries.sort(
+      (a, b) => b.TotalConfirmed - a.TotalConfirmed,
+    );
+    setCountries(dem);
+  };
+
+  const chooseCountry = country => {
+    setSelectedCountry(country.CountryCode);
+  };
+
   return (
     <Container>
       <SmallVirus>
@@ -30,58 +47,92 @@ const Home = ({navigation}) => {
           resizeMode="cover"
         />
       </LargeVirus>
-      <Header>
-        <HamBtn activeOpacity={0.9} onPress={() => navigation.toggleDrawer()}>
-          <Hamburger width={20.13} height={12.95} />
-        </HamBtn>
-      </Header>
-      <Wrapper>
-        <TitleWrapper>
-          <TitleText text="Global" color="#10242C" />
-          <BottomSheetBtn
-            activeOpacity={0.9}
-            onPress={() => bottomSheet.current.open()}>
-            {openSheet ? (
-              <Icon
-                type="ionicon"
-                name="ios-arrow-dropup-circle"
-                color="#FF8A23"
-                size={21}
-              />
-            ) : (
-              <Icon
-                type="ionicon"
-                name="ios-arrow-dropdown"
-                color="#FF8A23"
-                size={21}
-              />
-            )}
-          </BottomSheetBtn>
-        </TitleWrapper>
-        <MediumText text="Total Cases of CoronaVirus" color="#DF3030" />
-        <SelectWrapper>
-          <Select>
-            <Circle color="#FFA846" />
-            <SelectText>Total Cases</SelectText>
-            <Icon
-              type="ionicon"
-              name="ios-arrow-down"
-              color="#10242C"
-              size={16}
-            />
-          </Select>
-          <Select>
-            <Circle color="#FF5858" />
-            <SelectText>Total Deaths</SelectText>
-            <Icon
-              type="ionicon"
-              name="ios-arrow-down"
-              color="#10242C"
-              size={16}
-            />
-          </Select>
-        </SelectWrapper>
-      </Wrapper>
+      {openSheet ? (
+        <RedHeader>
+          <HamBtn activeOpacity={0.9} onPress={() => navigation.toggleDrawer()}>
+            <Hamburger width={20.13} height={12.95} />
+          </HamBtn>
+          <TitleWrapper style={{marginTop: 30}}>
+            <TitleText text="Global" color="#fff" />
+            <BottomSheetBtn
+              activeOpacity={0.9}
+              onPress={() => bottomSheet.current.open()}>
+              {openSheet ? (
+                <Icon
+                  type="ionicon"
+                  name="ios-arrow-dropup-circle"
+                  color="#FF8A23"
+                  size={21}
+                />
+              ) : (
+                <Icon
+                  type="ionicon"
+                  name="ios-arrow-dropdown"
+                  color="#FF8A23"
+                  size={21}
+                />
+              )}
+            </BottomSheetBtn>
+          </TitleWrapper>
+        </RedHeader>
+      ) : (
+        <>
+          <Header>
+            <HamBtn
+              activeOpacity={0.9}
+              onPress={() => navigation.toggleDrawer()}>
+              <Hamburger width={20.13} height={12.95} />
+            </HamBtn>
+          </Header>
+          <Wrapper>
+            <TitleWrapper>
+              <TitleText text="Global" color="#10242C" />
+              <BottomSheetBtn
+                activeOpacity={0.9}
+                onPress={() => bottomSheet.current.open()}>
+                {openSheet ? (
+                  <Icon
+                    type="ionicon"
+                    name="ios-arrow-dropup-circle"
+                    color="#FF8A23"
+                    size={21}
+                  />
+                ) : (
+                  <Icon
+                    type="ionicon"
+                    name="ios-arrow-dropdown"
+                    color="#FF8A23"
+                    size={21}
+                  />
+                )}
+              </BottomSheetBtn>
+            </TitleWrapper>
+            <MediumText text="Total Cases of CoronaVirus" color="#DF3030" />
+            <SelectWrapper>
+              <Select>
+                <Circle color="#FFA846" />
+                <SelectText>Total Cases</SelectText>
+                <Icon
+                  type="ionicon"
+                  name="ios-arrow-down"
+                  color="#10242C"
+                  size={16}
+                />
+              </Select>
+              <Select>
+                <Circle color="#FF5858" />
+                <SelectText>Total Deaths</SelectText>
+                <Icon
+                  type="ionicon"
+                  name="ios-arrow-down"
+                  color="#10242C"
+                  size={16}
+                />
+              </Select>
+            </SelectWrapper>
+          </Wrapper>
+        </>
+      )}
 
       {cases && (
         <Summary>
@@ -122,25 +173,40 @@ const Home = ({navigation}) => {
         ref={bottomSheet}
         height={668}
         animationType="slide"
-        closeOnDragDown={true}
+        closeOnDragDown={false}
         onOpen={() => setOpenSheet(true)}
         onClose={() => setOpenSheet(false)}
         duration={250}
         customStyles={{
-          wrapper: {},
+          wrapper: {
+            backgroundColor: 'transparent',
+          },
           container: {
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
-            paddingHorizontal: 25,
           },
           draggableIcon: {
             backgroundColor: 'rgba(203,203,203.0.36)',
             width: 81,
+            height: 5,
             marginVertical: 20,
+            alignSelf: 'center',
           },
         }}>
+        <DraggableIcon />
         <SheetTitle>Corona Affected Countries</SheetTitle>
-        <Country />
+        <CountryWrapper showsVerticalScrollIndicator={false}>
+          {countries &&
+            countries.map((country, index) => (
+              <Country
+                key={index}
+                name={country.Country}
+                id={country.CountryCode}
+                handlePress={() => chooseCountry(country)}
+                active={country.CountryCode === selectedCountry ? true : false}
+              />
+            ))}
+        </CountryWrapper>
       </RBSheet>
     </Container>
   );
@@ -176,6 +242,16 @@ const Header = styled.View`
   justify-content: flex-start;
   align-items: center;
   padding: 0px 20px;
+`;
+const RedHeader = styled.View`
+  background: #df3030;
+  padding-left: 20px;
+  width: 100%;
+  height: 400px;
+  padding-top: 100px;
+  position: absolute;
+  top: 0;
+  z-index: 5;
 `;
 const HamBtn = styled.TouchableOpacity``;
 const Wrapper = styled.View`
@@ -252,9 +328,21 @@ const CardText = styled.Text`
   font-size: 13px;
   color: #ff8a23;
 `;
+const DraggableIcon = styled.View`
+  background-color: rgba(203, 203, 203, 0.36);
+  width: 81px;
+  height: 5px;
+  margin: 20px 0px;
+  align-self: center;
+`;
 const SheetTitle = styled.Text`
   font-family: 'IBMPlexSans-Medium';
   font-size: 15px;
   color: #333333;
+  padding: 25px;
+  /* margin-bottom: 20px; */
+`;
+const CountryWrapper = styled.ScrollView`
+  /* padding-top: 10px; */
 `;
 export default Home;
